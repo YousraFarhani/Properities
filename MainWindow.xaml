@@ -1,0 +1,817 @@
+﻿<Window x:Class="tuto_epic.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:MaterialDesignThemes.Wpf.Converters.CircularProgressBar;assembly=MaterialDesignThemes.Wpf"
+
+        xmlns:local="clr-namespace:tuto_epic"
+
+        mc:Ignorable="d"
+        x:Name="mainWindow"
+        Title="MainWindow" Height="901" Width="auto" Loaded="Window_Loaded"
+        xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+                ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+         Background="{DynamicResource ForegroundColor}"
+         TextElement.Foreground="{DynamicResource MaterialDesignBody}" d:DesignWidth="1360">
+
+    <Window.Resources>
+
+
+        <!--// Tooltip Style Template //-->
+
+        <Style TargetType="ToolTip" x:Key="tt_style">
+
+            <Setter Property="Placement" Value="Right"/>
+            <Setter Property="Height" Value="70"/>
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Fonts/Roboto-Light.ttf #Roboto"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="PlacementRectangle" Value="80,0,0,0"/>
+            <Setter Property="HorizontalOffset" Value="2"/>
+            <Setter Property="VerticalOffset" Value="2"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToolTip}">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="0,12,12,12" Margin="{TemplateBinding Margin}">
+                            <ContentPresenter x:Name="ContentPresenter"  
+                                          Margin="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}">
+                            </ContentPresenter>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+
+        <Style x:Key="{x:Type Menu}" TargetType="Menu">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Menu">
+                        <Border x:Name="MainMenu" Background="Transparent">
+                            <StackPanel ClipToBounds="True" Orientation="Horizontal" IsItemsHost="True"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="MenuItemControlTemplate1" TargetType="{x:Type MenuItem}">
+            <Border x:Name="templateRoot"
+                BorderBrush="Transparent"
+                BorderThickness="1"
+                Background="{TemplateBinding Background}"
+                SnapsToDevicePixels="True" Margin="0,0,0,1">
+                <Grid VerticalAlignment="Center" RenderTransformOrigin="0.495,-1.02">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+
+                    <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    <Popup x:Name="PART_Popup"  AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
+                        <Border x:Name="SubMenuBorder" BorderBrush="#595959" BorderThickness="1" Background="#3A3A3A" Padding="2">
+                            <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                                <Grid RenderOptions.ClearTypeHint="Enabled">
+                                    <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                                        <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
+                                    </Canvas>
+                                    <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsSuspendingPopupAnimation" Value="True">
+                    <Setter Property="PopupAnimation" TargetName="PART_Popup" Value="None"/>
+                </Trigger>
+
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" TargetName="templateRoot" Value="#3E3E46"/>
+                    <Setter Property="BorderBrush" TargetName="templateRoot" Value="#2C2C2C"/>
+                </Trigger>
+
+                <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
+                    <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
+                    <Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="Header" Value="Test" />
+                    <Setter Property="BorderBrush" Value="#2C2C2C"></Setter>
+                    <Setter Property="BorderThickness" Value="1"></Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="MenuItemControlTemplate2" TargetType="{x:Type MenuItem}">
+            <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                <Grid Margin="-1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="22" SharedSizeGroup="MenuItemIconColumnGroup" Width="Auto"/>
+                        <ColumnDefinition Width="13"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition SharedSizeGroup="MenuItemIGTColumnGroup" Width="Auto"/>
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <ContentPresenter x:Name="Icon" Content="{TemplateBinding Icon}" ContentSource="Icon" HorizontalAlignment="Center" Height="16" Margin="3" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center" Width="16"/>
+                    <Border x:Name="GlyphPanel" BorderBrush="#FF26A0DA" BorderThickness="1" Background="#3D26A0DA" ClipToBounds="False" HorizontalAlignment="Center" Height="22" Margin="-1,0,0,0" Visibility="Hidden" VerticalAlignment="Center" Width="22">
+                        <Path x:Name="Glyph" Data="F1M10,1.2L4.7,9.1 4.5,9.1 0,5.2 1.3,3.5 4.3,6.1 8.3,0 10,1.2z" Fill="#FF212121" FlowDirection="LeftToRight" Height="11" Width="10"/>
+                    </Border>
+                    <ContentPresenter x:Name="menuHeaderContainer" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="menuGestureText" Grid.Column="4" Margin="{TemplateBinding Padding}" Opacity="0.7" Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="Icon" Value="{x:Null}">
+                    <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Visibility" TargetName="GlyphPanel" Value="Visible"/>
+                    <Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
+                </Trigger>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="BorderBrush" TargetName="templateRoot" Value="#FF26A0DA"/>
+                    <Setter Property="Background" TargetName="templateRoot" Value="#FF26A0DA"/>
+                    <Setter Property="TextBlock.Foreground" TargetName="menuHeaderContainer" Value="Black" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="#FF707070"/>
+                    <Setter Property="Fill" TargetName="Glyph" Value="#FF707070"/>
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsHighlighted" Value="True"/>
+                        <Condition Property="IsEnabled" Value="False"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background" TargetName="templateRoot" Value="#0A000000"/>
+                    <Setter Property="BorderBrush" TargetName="templateRoot" Value="#21000000"/>
+                </MultiTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+    </Window.Resources>
+    <Grid
+       
+        Background="#FF131A2D" Opacity="10" Width="auto" Margin="0,1,-8,0">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <!--Left navigation menu-->
+            <ColumnDefinition Width="277*"/>
+            <ColumnDefinition Width="67*"/>
+
+            <!-- content-->
+            <!--Right navigation menu-->
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="0*"/>
+            <!-- content-->
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" MinHeight="85"/>
+            <RowDefinition Height="auto" MinHeight="1000"/>
+            <!--Top nav menu-->
+
+            <!--content-->
+        </Grid.RowDefinitions>
+        <Border BorderBrush="#FF00C1FF" BorderThickness="1" Margin="12,0,2,-209" CornerRadius="0,20,20,0" Opacity="0.7" Grid.Column="2" Grid.Row="1" RenderTransformOrigin="0.5,0.5" Height="1457" VerticalAlignment="Bottom" >
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="-1"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Border.RenderTransform>
+            <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#9E363744"/>
+                    <GradientStop Color="#070E0E0E" Offset="1"/>
+                    <GradientStop Color="#083A3A3A" Offset="0.452"/>
+                    <GradientStop Color="#07383838" Offset="0.448"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid Grid.Column="2" Margin="9.5,0,0,1164" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="44" VerticalAlignment="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="43*"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBox TextWrapping="Wrap" Text="TextBox" FontFamily="Segoe UI Semibold" Margin="54,80,9.5,1325" RenderTransformOrigin="0.512,-0.188" Background="#FF1F1F52" BorderBrush="#FF00D6FF" BorderThickness="0.5" TextChanged="TextBox_TextChanged">
+                    <TextBox.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </TextBox.RenderTransform>
+                </TextBox>
+            </Grid>
+        </Border>
+        <ItemsControl x:Name="Itc" Margin="8,1,3,557" ItemsSource="{Binding Shapes}" SnapsToDevicePixels="False" Grid.Column="1" Grid.Row="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+
+                    <Canvas x:Name="MainCanvas" Margin="25,41,40.2,-73.4" ClipToBounds="True" Background="white" UseLayoutRounding="True" SnapsToDevicePixels="False"  MouseWheel="Canvas_MouseWheel"/>
+
+
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+        </ItemsControl>
+
+        <!--logo-->
+        <Grid
+            Background="#FF131A2D"/>
+
+        <Grid
+            Background="#FF131A2D"
+            Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,25">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel
+                Grid.RowSpan="2"
+                Panel.ZIndex="1"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="8">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Height" Value="25"/>
+                        <Setter Property="Width" Value="25"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate
+                                    TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <Path
+                                            Data ="{Binding Content, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}}"
+                                            Fill="{StaticResource SecondaryBrush}"
+                                            Height="{TemplateBinding FontSize}"
+                                            Width="{TemplateBinding FontSize}"
+                                            Stretch="Uniform"/>
+
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                    <Style x:Key="MaximizeButtonStyle"
+                           TargetType="{x:Type Button}"
+                           BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter Property="Content" Value="{StaticResource maximize_icon}"/>
+                        <Style.Triggers>
+                            <DataTrigger
+                                Binding="{Binding WindowState, ElementName= mainWindow}" Value="Maximized">
+                                <Setter Property="Content" Value="{StaticResource restore_icon}"/>
+
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button
+                    x:Name="minimizeButton"
+                    Content="{StaticResource minimize_icon}"
+                    Click="minimizeButton_Click"/>
+                <Button
+                    x:Name="maximizeButton"
+                    Content="{StaticResource maximize_icon}"
+                    Click="maximizeButton_Click"/>
+                <Button
+                    x:Name="closeButton"
+                    Content="{StaticResource close_icon}"
+                    Click="closeButton_Click"/>
+            </StackPanel>
+
+            <Grid
+                Grid.Row="0">
+
+                <Border  BorderThickness="1" CornerRadius="5,0,0,5" Height="50" Margin="0,0,10,-1" VerticalAlignment="Top">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                            <GradientStop Color="#66494848" Offset="1"/>
+                            <GradientStop Color="#33494848"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Ellipse Fill="#FFFFFBFB" HorizontalAlignment="Left" Height="8" Margin="10.2,23,0,0" VerticalAlignment="Top" Width="8" RenderTransformOrigin="0.419,-0.324"/>
+
+                </Border>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Margin="130,0">
+
+                    <Menu Background="Transparent" VerticalContentAlignment="Center" FontSize="15">
+                        <MenuItem Header="_Fichier" x:Name="mm" Template="{DynamicResource MenuItemControlTemplate1}" Margin="0,0,0,-0.2" Foreground="White" Width="75" Click="mm_Click" Background="#05FFFFFF" >
+                            <MenuItem Header="_Nouveau Projet" Template="{DynamicResource MenuItemControlTemplate2}"   />
+                            <MenuItem Header="_Ouvrir" Template="{DynamicResource MenuItemControlTemplate2}" />
+                            <Separator />
+                            <MenuItem Header="_Enregistrer"  Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Enregistrer sous" Template="{DynamicResource MenuItemControlTemplate2}" Click="Save_Click"/>
+                            <MenuItem Header="_Exporter" Template="{DynamicResource MenuItemControlTemplate2}" />
+                            <Separator/>
+                            <MenuItem Header="_Sortir" Template="{DynamicResource MenuItemControlTemplate2}"  Click=" ExitMenu_Click" />
+                        </MenuItem>
+                        <MenuItem Header="_Edition" Template="{DynamicResource MenuItemControlTemplate1}" Margin="0,0,0,-0.2" Foreground="White" Width="73">
+                            <MenuItem Header="_Anuler" Template="{DynamicResource MenuItemControlTemplate2}" />
+                            <MenuItem Header="_Retablir" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <Separator/>
+                            <MenuItem Header="_Copier" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Coller" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Supprimer" Template="{DynamicResource MenuItemControlTemplate2}" Click="DeleteAllMenu_Click"/>
+                            <MenuItem Header="_Sélectioner Tout" Template="{DynamicResource MenuItemControlTemplate2}"/>
+
+                        </MenuItem>
+                        <MenuItem Header="_Objet" Template="{DynamicResource MenuItemControlTemplate1}" Margin="0,0,0,-0.2" Foreground="White" Width="67" RenderTransformOrigin="0.798,0.503">
+                            <MenuItem Header="_Grouper" Template="{DynamicResource MenuItemControlTemplate2}" />
+                            <MenuItem Header="_Dissocier" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <Separator/>
+                            <MenuItem Header="_Masquer" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Transformation" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Alignement" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Changer Nom" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Disposition" Template="{DynamicResource MenuItemControlTemplate2}" />
+                        </MenuItem>
+                        <MenuItem Header="_Affichage" Template="{DynamicResource MenuItemControlTemplate1}" Foreground="White" Width="88" >
+                            <MenuItem Header="_Zoom Avant" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Zoom Arrière" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <Separator/>
+                            <MenuItem Header="_Grid">
+                                <MenuItem x:Name="SnapMenu" Header="Snap to grid √" Click="SnapMenu_Click" />
+                                <MenuItem x:Name="DispGridMenu" Header="Display grid √" Click="DispGridMenu_Click"/>
+                                <TextBlock Text ="Spacing:" />
+                                <ComboBox x:Name="SpacingCombo" Margin="0,0,-1,0" SelectedIndex="0" SelectionChanged="SpacingCombo_SelectionChanged" />
+                            </MenuItem>
+                            <MenuItem Header="_Afficher Bibliothèque" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <MenuItem Header="_Règle" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                        </MenuItem>
+                        <MenuItem Header="_Aide" Template="{DynamicResource MenuItemControlTemplate1}" Foreground="White" Width="79" >
+                            <MenuItem Header="_Signaler Un Problème" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                            <Separator/>
+                            <MenuItem Header="_A Propos De PolyDraw" Template="{DynamicResource MenuItemControlTemplate2}"/>
+                        </MenuItem>
+
+
+                    </Menu>
+                    <TextBlock x:Name="StatusTextBlock" Margin="0" TextWrapping="Wrap" Text="{Binding Status}" VerticalAlignment="Top"/>
+
+
+
+
+                </StackPanel>
+
+            </Grid>
+            <TextBlock HorizontalAlignment="Left" Height="23" Margin="34,15,0,0" TextWrapping="Wrap" Text="PolyDraw" VerticalAlignment="Top" Width="70" Foreground="White" FontSize="16"/>
+
+
+        </Grid>
+        <StackPanel>
+            <Image HorizontalAlignment="Left" Height="71" Margin="10,5,0,0" VerticalAlignment="Top" Width="68" Source="logo.png"/>
+        </StackPanel>
+        <Border BorderBrush="#FF00C1FF" BorderThickness="1" HorizontalAlignment="Left" Margin="-15,83,0,435" Width="100." CornerRadius="0,20,20,0" Opacity="0.7" Grid.RowSpan="2" Grid.ColumnSpan="2" >
+            <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#9E363744"/>
+                    <GradientStop Color="#070E0E0E" Offset="1"/>
+                    <GradientStop Color="#083A3A3A" Offset="0.452"/>
+                    <GradientStop Color="#08383838" Offset="0.448"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid Grid.Column="0" Opacity="1"  Background="#00000000" Margin="-120,-2,120,-237">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="0*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Margin="126,6,-126,-5" Grid.RowSpan="2">
+                    <StackPanel VerticalAlignment="Top"  Margin="15,20,0,0" >
+
+
+                        <Button x:Name="nav1" Height="60" Margin="0,0,0,0" Background="{DynamicResource Pen}" BorderBrush="{x:Null}"
+                                BorderThickness="0" Click="PolyLineMenu_Click">
+                            <Button.ToolTip>
+                                <ToolTip Style="{StaticResource tt_style}">
+                                    <StackPanel>
+                                        <WrapPanel>
+
+                                        </WrapPanel>
+                                        <TextBlock FontWeight="Bold" FontSize="12" Margin="0,0,0,5">Segment</TextBlock>
+
+                                        <TextBlock>
+                                                Dessiner un Segment
+                                        </TextBlock>
+                                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                        <TextBlock FontStyle="Italic">        savoir plus</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+
+                            </Button.ToolTip>
+                        </Button>
+                        <Button x:Name="nav2" Height="60" Margin="0,0,0,0" Background="{DynamicResource Rotation}" BorderBrush="{x:Null}"
+                                BorderThickness="0">
+                            <Button.ToolTip>
+                                <ToolTip Style="{StaticResource tt_style}">
+                                    <StackPanel>
+                                        <WrapPanel/>
+                                        <TextBlock FontWeight="Bold" FontSize="12" Margin="0,0,0,5"><Run Text="Rotation"/></TextBlock>
+
+                                        <TextBlock><Run Text="Rotationer un objet"/></TextBlock>
+                                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                        <TextBlock FontStyle="Italic"><Run Text="savoir plus"/></TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+
+                            </Button.ToolTip>
+                        </Button>
+                        <Button x:Name="RectMenu" Height="60" Margin="0,0,0,0"  Background="{DynamicResource Shapes}" BorderBrush="{x:Null}"
+                                BorderThickness="0" >
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Circle/Elipse" Click="EllMenu_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/shapes.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Square/Rectangle" Click="RectMenu_Click" >
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/shapes.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Polygone" Click="PolyLineMenu_Click" >
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/shapes.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                            <Button.ToolTip>
+                                <ToolTip Style="{StaticResource tt_style}">
+                                    <StackPanel>
+                                        <WrapPanel>
+
+                                        </WrapPanel>
+                                        <TextBlock FontWeight="Bold" FontSize="12" Margin="0,0,0,5">Polygone</TextBlock>
+
+                                        <TextBlock>
+                                                Dessiner un Polygone
+                                        </TextBlock>
+                                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                        <TextBlock FontStyle="Italic">        savoir plus</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+
+                            </Button.ToolTip>
+                        </Button>
+                        <Button x:Name="nav4" Height="60" Margin="0,0,0,0" Background="{DynamicResource Operations}" BorderBrush="{x:Null}"
+                                BorderThickness="0">
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Union" Click="UnionMenu_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/bool.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+
+                                    <MenuItem Header="Intersection" Click="IntersectMenu_Click" >
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/bool.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Substraction" Click="ExcludeMenu_Click">
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/bool.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                            <Button.ToolTip>
+                                <ToolTip Style="{StaticResource tt_style}">
+                                    <StackPanel>
+                                        <WrapPanel>
+
+                                        </WrapPanel>
+                                        <TextBlock FontWeight="Bold" FontSize="12" Margin="0,0,0,5">Opérations</TextBlock>
+
+                                        <TextBlock>
+                                                Opérations booléenes sur des objets
+                                        </TextBlock>
+                                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                        <TextBlock FontStyle="Italic">        savoir plus</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+
+                            </Button.ToolTip>
+                        </Button>
+                        <Button x:Name="nav5" Height="60" Margin="0,0,0,0" Background="{DynamicResource Colors}" BorderBrush="{x:Null}"  BorderThickness="0" Click="SelectColorMenu_Click">
+                            <Button.ToolTip>
+                                <ToolTip Style="{StaticResource tt_style}">
+                                    <StackPanel>
+                                        <WrapPanel>
+
+                                        </WrapPanel>
+                                        <TextBlock FontWeight="Bold" FontSize="12" Margin="0,0,0,5">Couleurs</TextBlock>
+
+                                        <TextBlock>
+                                                Colorer un objet
+                                        </TextBlock>
+                                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                        <TextBlock FontStyle="Italic">        savoir plus</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+
+                            </Button.ToolTip>
+                        </Button>
+                        <Button x:Name="nav6" Height="60" Margin="0,0,0,0" Background="{DynamicResource Zoom}" BorderBrush="{x:Null}"
+                                BorderThickness="0">
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Zoom In">
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/zoom.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Zoom Out" >
+                                        <MenuItem.Icon>
+                                            <Image Source="assets/zoom.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                            <Button.ToolTip>
+                                <ToolTip Style="{StaticResource tt_style}">
+                                    <StackPanel>
+                                        <WrapPanel>
+
+                                        </WrapPanel>
+                                        <TextBlock FontWeight="Bold" FontSize="12" Margin="0,0,0,5">Zoom</TextBlock>
+
+                                        <TextBlock>
+                                                Zoom In - Zoom Out
+                                        </TextBlock>
+                                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                        <TextBlock FontStyle="Italic">        savoir plus</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+
+                            </Button.ToolTip>
+                        </Button>
+                        <Button x:Name="nav7" Height="60" Margin="0,0,0,0" Background="{DynamicResource Shapes}" BorderBrush="{x:Null}"
+                                BorderThickness="0">
+                            <Button.ToolTip>
+                                <ToolTip Style="{StaticResource tt_style}">
+                                    <StackPanel>
+                                        <WrapPanel>
+
+                                        </WrapPanel>
+                                        <TextBlock FontWeight="Bold" FontSize="12" Margin="0,0,0,5">Outil Séléction</TextBlock>
+
+                                        <TextBlock>
+                                                Séléctioner un objet
+                                        </TextBlock>
+                                        <Border BorderBrush="Silver" BorderThickness="0,1,0,0" Margin="0,8" />
+                                        <TextBlock FontStyle="Italic">        savoir plus</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+
+                            </Button.ToolTip>
+                        </Button>
+
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+        </Border>
+
+        <Grid Grid.Column="2" Margin="10,0,0,1203" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="44" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="43*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Foreground="White" FontSize="20" FontFamily="Segeo UI" TextAlignment="Center" Margin="10,10,10,0" Text="Propriéte"/>
+
+        </Grid>
+        <Grid Grid.Column="2" Margin="9.5,0,0,1164" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="44" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="43*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="Nom_de_polygone" Foreground="White" Margin="6,3,3,3" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="18"
+            Text="Nom de polygone" TextChanged="Nom_de_polygone_TextChanged"      TextAlignment="Center" FontFamily="Segoe UI Light"  />
+        </Grid>
+
+        <Grid Grid.Column="2" Margin="33,0,113,1081" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="86" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="0.5" BorderBrush="#FF00D6FF" Background="#FF131A2D" CornerRadius="5" Margin="8,10,0,0" HorizontalAlignment="Left" Width="84" Height="66" VerticalAlignment="Top">
+                <TextBox TextWrapping="Wrap" Text="&#xD;&#xA;234.5" FontFamily="Segoe UI Semibold" Margin="-0.5,-0.5,-0.5,-10.5" RenderTransformOrigin="0.512,-0.188" Background="Transparent" BorderBrush="Transparent" BorderThickness="0.5" TextChanged="TextBox_TextChanged" Foreground="White" FontSize="16" Height="76" VerticalAlignment="Top" TextAlignment="Center"/>
+
+            </Border>
+            <Label Content="X" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Semibold" Foreground="White" RenderTransformOrigin="0.657,0.115"/>
+        </Grid>
+        <Grid Grid.Column="2" Margin="142,0,4,1081" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="86" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="0.5" BorderBrush="#FF00D6FF" Background="#FF131A2D" CornerRadius="5" Margin="8,10,0,0" HorizontalAlignment="Left" Width="84" Height="66" VerticalAlignment="Top">
+                <TextBox TextWrapping="Wrap" Text="&#xA;234.5" FontFamily="Segoe UI Semibold" Margin="-0.5,-0.5,-0.5,-10.5" RenderTransformOrigin="0.512,-0.188" Background="Transparent" BorderBrush="Transparent" BorderThickness="0.5" TextChanged="TextBox_TextChanged" Foreground="White" FontSize="16" Height="76" VerticalAlignment="Top" TextAlignment="Center"/>
+            </Border>
+            <Label Content="Y" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Foreground="White" FontFamily="Segoe UI Semibold"/>
+        </Grid>
+        <Grid Grid.Column="2" Margin="33,0,113,1000" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="86" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="0.5" BorderBrush="#FF00D6FF" Background="#FF131A2D" CornerRadius="5" Margin="8,10,0,0" HorizontalAlignment="Left" Width="84" Height="66" VerticalAlignment="Top">
+                <TextBox TextWrapping="Wrap" Text="&#xA;234.5" FontFamily="Segoe UI Semibold" Margin="-0.5,-0.5,-0.5,-10.5" RenderTransformOrigin="0.512,-0.188" Background="Transparent" BorderBrush="Transparent" BorderThickness="0.5" TextChanged="TextBox_TextChanged" Foreground="White" FontSize="16" Height="76" VerticalAlignment="Top" TextAlignment="Center"/>
+            </Border>
+            <Label Content="Hauteur" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" FontFamily="Segoe UI Semibold" Foreground="White" FontSize="11"/>
+        </Grid>
+        <Grid Grid.Column="2" Margin="142,0,4,1000" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="86" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="0.5" BorderBrush="#FF00D6FF" Background="#FF131A2D" CornerRadius="5" Margin="8,10,0,0" HorizontalAlignment="Left" Width="84" Height="66" VerticalAlignment="Top">
+                <TextBox TextWrapping="Wrap" Text="&#xA;234.5" FontFamily="Segoe UI Semibold" Margin="-0.5,-0.5,-0.5,-10.5" RenderTransformOrigin="0.512,-0.188" Background="Transparent" BorderBrush="Transparent" BorderThickness="0.5" TextChanged="TextBox_TextChanged" Foreground="White" FontSize="16" Height="76" VerticalAlignment="Top" TextAlignment="Center"/>
+            </Border>
+            <Label Content="Largeur" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Semibold" FontSize="11" Foreground="White"/>
+        </Grid>
+        <Grid Grid.Column="2" Margin="85,0,61,919" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="86" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+        </Grid>
+        <Grid Grid.Column="2" Margin="6,0,4,870" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="44" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="43*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Foreground="White" FontSize="16" FontFamily="Segoe UI Symbol" Margin="29,0,-9,10" Text="Allignement"/>
+
+        </Grid>
+        <Grid Grid.Column="2" Margin="33,0,147,819" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="66" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="72" Grid.ColumnSpan="2" Margin="0,0,-5,-6" Grid.RowSpan="3">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon11.png" Height="43" Width="70" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="76" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="72" Margin="60,5,-66,-11" Grid.RowSpan="3" Grid.ColumnSpan="2">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon22.png" Height="58" Width="72" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="76" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="72" Margin="51.5,5,-124,-11" Grid.RowSpan="3" Grid.Column="1">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon33.png" Height="58" Width="72" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="74" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="72" Margin="-8,62,0,-68" Grid.RowSpan="3">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon44.png" Height="55" Width="87" HorizontalAlignment="Left" Margin="0,0,-15,0"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="76" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="72" Margin="60,0,-66,-72" Grid.ColumnSpan="2" Grid.Row="2">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon55.png" Height="58" Width="72" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="76" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="72" Margin="51.5,0,-124,-72" Grid.Column="1" Grid.Row="2">
+                <StackPanel Width="72">
+                    <Image  Height="58" Width="72" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="76" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="72" Margin="51.5,0,-124,-72" Grid.Column="1" Grid.Row="2">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon66.png" Height="58" Width="72" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="94" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="88" Margin="-19,153,-5,-241" Grid.Row="2" Grid.ColumnSpan="2">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon77.png" Height="75" Width="94" HorizontalAlignment="Left" Margin="0,0,-22,0"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="94" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="88" Margin="54,158,-78,-246" Grid.Row="2" Grid.ColumnSpan="2">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon88.png" Height="75" Width="94" HorizontalAlignment="Left" Margin="0,0,-22,0"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="94" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="88" Margin="42.5,158,-133,-246" Grid.Row="2" Grid.Column="1" Click="DeleteAllMenu_Click">
+                <StackPanel Width="72">
+                    <Image Source="Assets\icon99.png" Height="75" Width="94" HorizontalAlignment="Left" Margin="0,0,-22,0"/>
+                </StackPanel>
+            </Button>
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top" Width="94" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" Height="88" Margin="-1156,261,0,-349" Grid.Row="2">
+                <Hyperlink x:Name="lnkGoogle" NavigateUri="https://yara201.github.io/polydraw/"
+              >
+                    <StackPanel Width="72">
+                        <Image Source="assets/icon777.png" Height="72" Width="72" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Hyperlink>
+
+
+            </Button>
+
+        </Grid>
+        <Grid Grid.Column="2" Margin="85,0,61,919" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="86" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="0.5" BorderBrush="#FF00D6FF" Background="#FF131A2D" CornerRadius="5" Margin="8,10,0,0" HorizontalAlignment="Left" Width="84" Height="66" VerticalAlignment="Top">
+                <TextBox TextWrapping="Wrap" Text="&#xA;170.5°" FontFamily="Segoe UI Semibold" Margin="-0.5,-0.5,-0.5,-10.5" RenderTransformOrigin="0.512,-0.188" Background="Transparent" BorderBrush="Transparent" BorderThickness="0.5" TextChanged="TextBox_TextChanged" Foreground="White" FontSize="16" Height="76" VerticalAlignment="Top" TextAlignment="Center"/>
+            </Border>
+            <Label Content="Rotation ∡" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Semibold" FontSize="11" Foreground="White"/>
+        </Grid>
+        <Grid Grid.Column="2" Margin="48,0,37,658" Grid.Row="1" RenderTransformOrigin="0.47,0.42" Height="86" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+            <Border BorderThickness="0.1" CornerRadius="5" BorderBrush="Transparent" Margin="2,20,1,17" >
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF08D6EB" Offset="0"/>
+                        <GradientStop Color="#FF1292CF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Button Content="Bibliothéque" HorizontalAlignment="Left" VerticalAlignment="Top" Width="180" Height="49" Background="{x:Null}" BorderBrush="{x:Null}" FontFamily="Segoe UI Semibold" FontSize="18" Foreground="White" Margin="0,0,-18,0" />
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

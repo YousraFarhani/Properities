@@ -1,0 +1,71 @@
+﻿<Application x:Class="tuto_epic.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:tuto_epic"
+             StartupUri="MainWindow.xaml">
+    
+    <Application.Resources>
+        
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="icons.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Grey.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Yellow.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+
+
+            <!--#window brushes color scheme -->
+            <!--#region  Brushes-->
+            <SolidColorBrush x:Key="DefaultBackgroundBrush"
+                         Color="#16181E"/>
+            <SolidColorBrush x:Key="CanvasBrush"
+                         Color="#20202C"/>
+            <SolidColorBrush x:Key="PrimaryBrush"
+                         Color="#00AAEB"/>
+            <SolidColorBrush x:Key="SecondaryBrush"
+                         Color="White"/>
+            <SolidColorBrush x:Key="TertiaryBrush"
+                         Color="#E53E46"/>
+
+            <SolidColorBrush x:Key="DimBrush"
+                         Color="#3E3E46"/>
+
+
+            <ImageBrush x:Key="Rotation" TileMode="None"
+     ViewportUnits="Absolute" Viewport="20 20 20 20"
+     ImageSource="/assets/rotate.png" >
+            </ImageBrush>
+            <ImageBrush x:Key="Colors" TileMode="None"
+     ViewportUnits="Absolute" Viewport="20 20 20 20"
+     ImageSource="/assets/colors.png" >
+            </ImageBrush>
+            <ImageBrush x:Key="Shapes" TileMode="None"
+     ViewportUnits="Absolute" Viewport="20 20 20 20"
+     ImageSource="/assets/shapes.png" >
+            </ImageBrush>
+            <ImageBrush x:Key="Selection" TileMode="None"
+     ViewportUnits="Absolute" Viewport="20 20 20 20"
+     ImageSource="/assets/select.png" >
+            </ImageBrush>
+            <ImageBrush x:Key="Zoom" TileMode="None"
+     ViewportUnits="Absolute" Viewport="20 20 20 20"
+     ImageSource="/assets/zoom.png" >
+            </ImageBrush>
+            <ImageBrush x:Key="Operations" TileMode="None"
+     ViewportUnits="Absolute" Viewport="20 20 20 20"
+     ImageSource="/assets/bool.png" >
+            </ImageBrush>
+            <ImageBrush x:Key="Pen" TileMode="None"
+     ViewportUnits="Absolute" Viewport="20 20 20 20"
+     ImageSource="/assets/pen.png" >
+            </ImageBrush>
+
+
+
+        </ResourceDictionary>
+
+    </Application.Resources>
+</Application>
